@@ -1,8 +1,8 @@
-package com.example
+package com.dchoi
 
-import com.example.Models.Medication
-
+import com.dchoi.Models.{ Medication, Medications }
 import akka.actor.{ Actor, ActorLogging, Props }
+
 object MedicationActor {
   final case class ActionPerformed(description: String)
   final case object GetMedications
@@ -10,7 +10,7 @@ object MedicationActor {
   final case class GetMedication(name: String)
   final case class DeleteMedication(name: String)
 
-  def props: Props = Props[UserRegistryActor]
+  def props: Props = Props[MedicationActor]
 }
 
 class MedicationActor extends Actor with ActorLogging {
@@ -20,14 +20,15 @@ class MedicationActor extends Actor with ActorLogging {
 
   def receive: Receive = {
     case GetMedications =>
-      sender()
+      sender() ! Medications(medications.toSeq)
     case CreateMedication(medication) =>
+      medications += medication
       sender() ! ActionPerformed(s"Medication ${medication.name} created.")
-    case GetMedication(id) =>
-      sender() ! medications.find(_.id == id)
-    case DeleteMedication(id) =>
-      medications.find(_.id == id) foreach { medication => medications -= medication }
-      sender() ! ActionPerformed(s"Medication ${id} deleted.")
+    //    case GetMedication(id) =>
+    //      sender() ! medications.find(_.id == id)
+    //    case DeleteMedication(id) =>
+    //      medications.find(_.id == id) foreach { medication => medications -= medication }
+    //      sender() ! ActionPerformed(s"Medication ${id} deleted.")
   }
 
 }
