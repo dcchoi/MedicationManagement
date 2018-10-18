@@ -1,25 +1,20 @@
 package com.dchoi
 
-import com.dchoi.Models.{ Medication, Medications }
-import com.dchoi.UserRegistryActor.ActionPerformed
-import com.dchoi.MedicationActor.ActionPerformed
-
-//#json-support
+import com.dchoi.Models.{ Medication, Medications, Patient, Patients }
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import spray.json.DefaultJsonProtocol
+import spray.json.{ DefaultJsonProtocol, JsonFormat }
 
 trait JsonSupport extends SprayJsonSupport {
   // import the default encoders for primitive types (Int, String, Lists etc)
   import DefaultJsonProtocol._
 
-  implicit val userJsonFormat = jsonFormat3(User)
-  implicit val usersJsonFormat = jsonFormat1(Users)
+  //implicit val patientJsonFormat = jsonFormat3(Patient)
+  implicit val medicationFormat = jsonFormat(Medication, "id", "name")
+  implicit val patientFormat = jsonFormat(Patient, "id", "name", "medications")
+  implicit val patientsJsonFormat = jsonFormat(Patients, "patients")
+  implicit val medicationsJsonFormat = jsonFormat(Medications, "medications")
 
-  implicit val medicationJsonFormat = jsonFormat2(Medication)
-  implicit val medicationsJsonFormat = jsonFormat1(Medications)
-
-  implicit val actionPerformedJsonFormat = jsonFormat1(UserRegistryActor.ActionPerformed)
+  implicit val patientActionPerformedJsonFormat = jsonFormat1(PatientActor.ActionPerformed)
   implicit val medicationActionPerformedJsonFormat = jsonFormat1(MedicationActor.ActionPerformed)
 
 }
-//#json-support

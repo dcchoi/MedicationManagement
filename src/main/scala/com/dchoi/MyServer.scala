@@ -7,33 +7,23 @@ import akka.actor.{ ActorRef, ActorSystem }
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
-import com.dchoi.Routes.MedicationRoutes
 
 //#main-class
-object Server extends App with MedicationRoutes {
+object MyServer extends App with MyRoutes {
 
   // set up ActorSystem and other dependencies here
-  //#main-class
-  //#server-bootstrapping
   implicit val system: ActorSystem = ActorSystem("helloAkkaHttpServer")
   implicit val materializer: ActorMaterializer = ActorMaterializer()
-  //#server-bootstrapping
 
-  val userRegistryActor: ActorRef = system.actorOf(UserRegistryActor.props, "userRegistryActor")
+  val patientActor: ActorRef = system.actorOf(PatientActor.props, "patientActor")
   val medicationActor: ActorRef = system.actorOf(MedicationActor.props, "medicationActor")
 
-  //#main-class
-  lazy val routes: Route = medicationRoutes
-  //#main-class
+  lazy val routes = myRoutes
 
-  //#http-server
   Http().bindAndHandle(routes, "localhost", 8002)
 
   println(s"Server online at http://localhost:8002/")
 
   Await.result(system.whenTerminated, Duration.Inf)
-  //#http-server
-  //#main-class
+
 }
-//#main-class
-//#quick-start-server
