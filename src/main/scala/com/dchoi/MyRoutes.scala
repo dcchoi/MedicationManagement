@@ -2,6 +2,7 @@ package com.dchoi
 
 import akka.actor.{ ActorRef, ActorSystem }
 import akka.event.Logging
+import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -10,8 +11,9 @@ import akka.http.scaladsl.server.directives.RouteDirectives.complete
 import akka.pattern.ask
 import akka.util.Timeout
 import com.dchoi.MedicationActor._
-import com.dchoi.Models.{ Medication, Medications, Patient, Patients }
-import com.dchoi.PatientActor.{ CreatePatient, GetPatients }
+import com.dchoi.Models._
+import com.dchoi.PatientActor.{ AssignPatientMedication, CreatePatient, GetPatients }
+import com.dchoi.Service.PatientService
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -70,6 +72,13 @@ trait MyRoutes extends JsonSupport {
                     log.info("Created patient [{}]: {}", patient.name, performed.description)
                     complete((StatusCodes.Created, performed))
                   }
+                }
+              },
+              put {
+                entity(as[PatientMedicationUpdate]) { update =>
+                  val patientMedicationUpdate: Future[PatientMedicationUpdate] =
+                    (patientActor ? AssignPatientMedication(update.patientId, update.medicationId)).mapTo[PatientMedicationUpdate]
+                  complete(patientMedicationUpdate)
                 }
               }
             )

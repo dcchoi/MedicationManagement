@@ -2,6 +2,7 @@ package com.dchoi
 
 import com.dchoi.Models.{ Medication, Medications, Patients }
 import akka.actor.{ Actor, ActorLogging, Props }
+import com.dchoi.Service.MedicationService
 
 object MedicationActor {
   final case class ActionPerformed(description: String)
@@ -14,13 +15,11 @@ object MedicationActor {
 class MedicationActor extends Actor with ActorLogging {
   import MedicationActor._
 
-  var medications = Set.empty[Medication]
-
   def receive: Receive = {
     case GetMedications =>
-      sender() ! Medications(medications.toSeq)
+      sender() ! Medications(MedicationService.retrieveMedications())
     case CreateMedication(medication) =>
-      medications += medication
+      MedicationService.addMedication(medication)
       sender() ! ActionPerformed(s"Medication ${medication.name} created.")
   }
 
