@@ -2,24 +2,26 @@ package com.dchoi.Service
 
 import com.dchoi.Models.Medication
 
-import scala.collection.mutable.Seq
-
 object MedicationService {
-  private val medications = Seq.empty[Medication]
+  private var medications = Seq.empty[Medication]
 
   def retrieveMedications(): Seq[Medication] = {
     medications
   }
 
   def addMedication(medication: Medication) = {
-    medications :+ medication
+    medications = medications :+ medication
+  }
+
+  def retrieveMedication(medicationId: String): Medication = {
+    medications.filter(m => m.id == medicationId).head
   }
 
   def outputMedicationsInfo(): String = {
     var description = ""
     medications.foreach(m => {
       description += "Medication: " + m.name + "\n"
-      description += "Id: " + m.id + "\n"
+      description += "Medication Id: " + m.id + "\n"
     })
     return description
   }

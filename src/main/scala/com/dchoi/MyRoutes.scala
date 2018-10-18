@@ -2,7 +2,6 @@ package com.dchoi
 
 import akka.actor.{ ActorRef, ActorSystem }
 import akka.event.Logging
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -12,8 +11,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.dchoi.MedicationActor._
 import com.dchoi.Models._
-import com.dchoi.PatientActor.{ AssignPatientMedication, CreatePatient, GetPatients }
-import com.dchoi.Service.PatientService
+import com.dchoi.PatientActor.{ AssignPatientMedication, CreatePatient, GetPatients, UnassignPatientMedication }
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -27,6 +25,7 @@ trait MyRoutes extends JsonSupport {
 
   // other dependencies that MyRoutes use
   def medicationActor: ActorRef
+
   def patientActor: ActorRef
 
   implicit lazy val timeout = Timeout(20.seconds) // usually we'd obtain the timeout from the system's configuration
@@ -73,7 +72,10 @@ trait MyRoutes extends JsonSupport {
                     complete((StatusCodes.Created, performed))
                   }
                 }
-              },
+              }
+            )
+          } ~
+            path("assign") {
               put {
                 entity(as[PatientMedicationUpdate]) { update =>
                   val patientMedicationUpdate: Future[PatientMedicationUpdate] =
@@ -81,8 +83,16 @@ trait MyRoutes extends JsonSupport {
                   complete(patientMedicationUpdate)
                 }
               }
-            )
-          }
+            } ~
+            path("unassign") {
+              put {
+                entity(as[PatientMedicationUpdate]) { update =>
+                  val patientMedicationUpdate: Future[PatientMedicationUpdate] =
+                    (patientActor ? UnassignPatientMedication(update.patientId, update.medicationId)).mapTo[PatientMedicationUpdate]
+                  complete(patientMedicationUpdate)
+                }
+              }
+            }
         )
       }
 }

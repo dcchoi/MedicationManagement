@@ -9,6 +9,7 @@ object PatientActor {
   final case object GetPatients
   final case class CreatePatient(patient: Patient)
   final case class AssignPatientMedication(patientId: String, medicationId: String)
+  final case class UnassignPatientMedication(patientId: String, medicationId: String)
 
   def props: Props = Props[PatientActor]
 }
@@ -25,6 +26,9 @@ class PatientActor extends Actor with ActorLogging {
       sender() ! ActionPerformed(s"Patient ${patient.name} created.")
     case AssignPatientMedication(patientId, medicationId) =>
       PatientService.assignPatientMedication(patientId, medicationId)
+      sender() ! PatientMedicationUpdate(patientId, medicationId)
+    case UnassignPatientMedication(patientId, medicationId) =>
+      PatientService.unassignPatientMedication(patientId, medicationId)
       sender() ! PatientMedicationUpdate(patientId, medicationId)
   }
 
