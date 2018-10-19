@@ -30,7 +30,7 @@ class MedicationActor extends Actor with ActorLogging {
           response = s"Medication with id ${medication.id} already exists."
         } else {
           MedicationService.addMedication(medication)
-          response = s"Medication ${medication.name} created."
+          response = s"Medication with id ${medication.id} created."
         }
         sender() ! ActionPerformed(response)
     }

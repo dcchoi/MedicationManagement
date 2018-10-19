@@ -65,9 +65,9 @@ trait MyRoutes extends JsonSupport {
                 }
               },
               post {
-                entity(as[Patient]) { patient =>
+                entity(as[InitialPatient]) { initialPatient =>
                   val patientCreated: Future[PatientActor.ActionPerformed] =
-                    (patientActor ? CreatePatient(patient)).mapTo[PatientActor.ActionPerformed]
+                    (patientActor ? CreatePatient(initialPatient)).mapTo[PatientActor.ActionPerformed]
                   onSuccess(patientCreated) { performed =>
                     complete((StatusCodes.Created, performed.description))
                   }

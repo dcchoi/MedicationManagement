@@ -1,15 +1,14 @@
 package com.dchoi.Service
 
-import com.dchoi.Models.{ Patient }
+import com.dchoi.Models.{ InitialPatient, Medication, Patient }
 
 object PatientService {
   private var patients = Seq.empty[Patient]
 
-  def addPatient(patient: Patient) = {
-    if (patients.filter(p => p.id == patient.id).length == 0) {
-      patients = patients :+ patient
-    } else {
-      println(s"Patient with id: ${patient.id} already exists")
+  def addPatient(initialPatient: InitialPatient) = {
+    if (!patientExists(initialPatient.id)) {
+      // Enforce empty medication on patient creation
+      patients = patients :+ Patient(initialPatient.id, initialPatient.name, Seq.empty[Medication])
     }
   }
 

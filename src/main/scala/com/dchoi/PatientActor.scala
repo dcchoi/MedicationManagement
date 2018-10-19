@@ -1,13 +1,13 @@
 package com.dchoi
 
-import com.dchoi.Models.{ Patient, PatientMedicationUpdate, Patients }
+import com.dchoi.Models.{ InitialPatient }
 import akka.actor.{ Actor, ActorLogging, Props }
 import com.dchoi.Service.{ MedicationService, PatientService }
 
 object PatientActor {
   final case class ActionPerformed(description: String)
   final case object GetPatients
-  final case class CreatePatient(patient: Patient)
+  final case class CreatePatient(initialPatient: InitialPatient)
   final case class AssignPatientMedication(patientId: String, medicationId: String)
   final case class UnassignPatientMedication(patientId: String, medicationId: String)
 
@@ -23,12 +23,12 @@ class PatientActor extends Actor with ActorLogging {
     {
       case GetPatients =>
         sender() ! ActionPerformed(PatientService.outputPatientsInfo())
-      case CreatePatient(patient) =>
-        if (PatientService.patientExists(patient.id)) {
-          response = s"Patient with id ${patient.id} already exists."
+      case CreatePatient(initialPatient) =>
+        if (PatientService.patientExists(initialPatient.id)) {
+          response = s"Patient with id ${initialPatient.id} already exists."
         } else {
-          PatientService.addPatient(patient)
-          response = s"Patient ${patient.name} created."
+          PatientService.addPatient(initialPatient)
+          response = s"Patient with id ${initialPatient.id} created."
         }
         sender() ! ActionPerformed(response)
       case AssignPatientMedication(patientId, medicationId) =>
@@ -40,7 +40,7 @@ class PatientActor extends Actor with ActorLogging {
           response = s"Medication and Patient pair already exists."
         } else {
           PatientService.assignPatientMedication(patientId, medicationId)
-          response = s"Patient with Id ${patientId} assigned medication with Id ${medicationId}"
+          response = s"Patient with id ${patientId} assigned medication with id ${medicationId}"
         }
         sender() ! ActionPerformed(response)
       case UnassignPatientMedication(patientId, medicationId) =>
@@ -48,7 +48,7 @@ class PatientActor extends Actor with ActorLogging {
           response = s"Medication and Patient pair does not exist"
         } else {
           PatientService.unassignPatientMedication(patientId, medicationId)
-          response = s"Patient with Id ${patientId} unassigned medication with Id ${medicationId}"
+          response = s"Patient with id ${patientId} unassigned medication with id ${medicationId}"
         }
         sender() ! ActionPerformed(response)
     }

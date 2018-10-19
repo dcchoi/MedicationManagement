@@ -6,7 +6,9 @@ object MedicationService {
   private var medications = Seq.empty[Medication]
 
   def addMedication(medication: Medication) = {
-    medications = medications :+ medication
+    if (!medicationExists(medication.id)) {
+      medications = medications :+ medication
+    }
   }
 
   def retrieveMedication(medicationId: String): Medication = {
