@@ -1,17 +1,17 @@
 package com.dchoi
 
-//#quick-start-server
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import akka.actor.{ ActorRef, ActorSystem }
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
 
-//#main-class
 object MyServer extends App with MyRoutes {
+  var port = 8090
+  if (args.length == 1) {
+    port = args(0).toInt
+  }
 
-  // set up ActorSystem and other dependencies here
   implicit val system: ActorSystem = ActorSystem("helloAkkaHttpServer")
   implicit val materializer: ActorMaterializer = ActorMaterializer()
 
@@ -20,9 +20,9 @@ object MyServer extends App with MyRoutes {
 
   lazy val routes = myRoutes
 
-  Http().bindAndHandle(routes, "localhost", 8002)
+  Http().bindAndHandle(routes, "localhost", port)
 
-  println(s"Server online at http://localhost:8002/")
+  println(s"Server online at http://localhost:${port}/")
 
   Await.result(system.whenTerminated, Duration.Inf)
 
