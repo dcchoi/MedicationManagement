@@ -18,17 +18,15 @@ import scala.concurrent.duration._
 
 trait MyRoutes extends JsonSupport {
 
-  // we leave these abstract, since they will be provided by the App
   implicit def system: ActorSystem
 
   lazy val log = Logging(system, classOf[MyRoutes])
 
-  // other dependencies that MyRoutes use
   def medicationActor: ActorRef
 
   def patientActor: ActorRef
 
-  implicit lazy val timeout = Timeout(20.seconds) // usually we'd obtain the timeout from the system's configuration
+  implicit lazy val timeout = Timeout(5.seconds)
 
   lazy val myRoutes: Route =
     pathPrefix("medications") {
@@ -36,17 +34,18 @@ trait MyRoutes extends JsonSupport {
         pathEnd {
           concat(
             get {
-              val medications: Future[Medications] =
-                (medicationActor ? GetMedications).mapTo[Medications]
-              complete(medications)
+              val medications: Future[MedicationActor.ActionPerformed] =
+                (medicationActor ? GetMedications).mapTo[MedicationActor.ActionPerformed]
+              onSuccess(medications) { performed =>
+                complete(StatusCodes.OK, performed.description)
+              }
             },
             post {
               entity(as[Medication]) { medication =>
                 val medicationCreated: Future[MedicationActor.ActionPerformed] =
                   (medicationActor ? CreateMedication(medication)).mapTo[MedicationActor.ActionPerformed]
                 onSuccess(medicationCreated) { performed =>
-                  log.info("Created medication [{}]: {}", medication.name, performed.description)
-                  complete((StatusCodes.Created, performed))
+                  complete((StatusCodes.Created, performed.description))
                 }
               }
             }
@@ -59,17 +58,18 @@ trait MyRoutes extends JsonSupport {
           pathEnd {
             concat(
               get {
-                val patients: Future[Patients] =
-                  (patientActor ? GetPatients).mapTo[Patients]
-                complete(patients)
+                val patientsRetrieved: Future[PatientActor.ActionPerformed] =
+                  (patientActor ? GetPatients).mapTo[PatientActor.ActionPerformed]
+                onSuccess(patientsRetrieved) { performed =>
+                  complete(StatusCodes.OK, performed.description)
+                }
               },
               post {
                 entity(as[Patient]) { patient =>
                   val patientCreated: Future[PatientActor.ActionPerformed] =
                     (patientActor ? CreatePatient(patient)).mapTo[PatientActor.ActionPerformed]
                   onSuccess(patientCreated) { performed =>
-                    log.info("Created patient [{}]: {}", patient.name, performed.description)
-                    complete((StatusCodes.Created, performed))
+                    complete((StatusCodes.Created, performed.description))
                   }
                 }
               }
@@ -78,18 +78,22 @@ trait MyRoutes extends JsonSupport {
             path("assign") {
               put {
                 entity(as[PatientMedicationUpdate]) { update =>
-                  val patientMedicationUpdate: Future[PatientMedicationUpdate] =
-                    (patientActor ? AssignPatientMedication(update.patientId, update.medicationId)).mapTo[PatientMedicationUpdate]
-                  complete(patientMedicationUpdate)
+                  val patientMedicationUpdate: Future[PatientActor.ActionPerformed] =
+                    (patientActor ? AssignPatientMedication(update.patientId, update.medicationId)).mapTo[PatientActor.ActionPerformed]
+                  onSuccess(patientMedicationUpdate) { performed =>
+                    complete((StatusCodes.OK, performed.description))
+                  }
                 }
               }
             } ~
             path("unassign") {
               put {
                 entity(as[PatientMedicationUpdate]) { update =>
-                  val patientMedicationUpdate: Future[PatientMedicationUpdate] =
-                    (patientActor ? UnassignPatientMedication(update.patientId, update.medicationId)).mapTo[PatientMedicationUpdate]
-                  complete(patientMedicationUpdate)
+                  val patientMedicationUpdate: Future[PatientActor.ActionPerformed] =
+                    (patientActor ? UnassignPatientMedication(update.patientId, update.medicationId)).mapTo[PatientActor.ActionPerformed]
+                  onSuccess(patientMedicationUpdate) { performed =>
+                    complete((StatusCodes.OK, performed.description))
+                  }
                 }
               }
             }

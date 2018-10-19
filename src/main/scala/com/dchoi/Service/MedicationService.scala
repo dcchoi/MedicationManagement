@@ -5,10 +5,6 @@ import com.dchoi.Models.Medication
 object MedicationService {
   private var medications = Seq.empty[Medication]
 
-  def retrieveMedications(): Seq[Medication] = {
-    medications
-  }
-
   def addMedication(medication: Medication) = {
     medications = medications :+ medication
   }
@@ -23,6 +19,10 @@ object MedicationService {
       description += "Medication: " + m.name + "\n"
       description += "Medication Id: " + m.id + "\n"
     })
-    return description
+    description
+  }
+
+  def medicationExists(medicationId: String): Boolean = {
+    medications.filter(m => m.id == medicationId).length > 0
   }
 }

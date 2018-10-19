@@ -1,16 +1,16 @@
 package com.dchoi.Service
 
-import com.dchoi.Models.{ Medication, Patient }
+import com.dchoi.Models.{ Patient }
 
 object PatientService {
   private var patients = Seq.empty[Patient]
 
-  def retrievePatients(): Seq[Patient] = {
-    patients
-  }
-
   def addPatient(patient: Patient) = {
-    patients = patients :+ patient
+    if (patients.filter(p => p.id == patient.id).length == 0) {
+      patients = patients :+ patient
+    } else {
+      println(s"Patient with id: ${patient.id} already exists")
+    }
   }
 
   def assignPatientMedication(patientId: String, medicationId: String) = {
@@ -47,7 +47,21 @@ object PatientService {
         description += "\tId: " + m.id + "\n"
       })
     })
-    return description
+    description
   }
 
+  def getPatient(patientId: String): Patient = {
+    patients.filter(p => p.id == patientId).head
+  }
+
+  def patientExists(patientId: String): Boolean = {
+    patients.filter(p => p.id == patientId).length > 0
+  }
+
+  def patientMedicationExists(patientId: String, medicationId: String): Boolean = {
+    if (!patientExists(patientId)) {
+      return false
+    }
+    getPatient(patientId).medications.filter(m => m.id == medicationId).length > 0
+  }
 }
