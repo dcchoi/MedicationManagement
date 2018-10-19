@@ -19,15 +19,17 @@ https://www.jetbrains.com/idea/download/#section=windows
 
 Running the server:
 
-I have attached a prebuilt jar that can be used right away called: MedicationManagement-assembly-0.1-SNAPSHOT.jar
+To create the jar file, in the MedicationManagement folder, with sbt installed, type "sbt assembly" (without quotes)
 
-For my requests to the REST API, work with Window's Powershell to hit requests. For Unix machines, you will need to have the Curl equivalent.
+In \target\scala-2.12 , there should now be a MedicationManagement-assembly-0.1-SNAPSHOT.jar that you will be able to use
 
 From command line, on the same directory as MedicationManagement-assembly-0.1-SNAPSHOT.jar, type
 
 "scala MedicationManagement-assembly-0.1-SNAPSHOT <port number>" (without quotes) to start the server up
 
 If you want to specify a particular port fill in the <port number>, else it will default to 8090
+
+For my requests to the REST API, work with Window's Powershell to hit requests. For Unix machines, you will need to have the Curl equivalent.
 
 --------------------------------
 
