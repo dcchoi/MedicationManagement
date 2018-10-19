@@ -9,9 +9,10 @@ import akka.http.scaladsl.server.directives.MethodDirectives.{ get, post }
 import akka.http.scaladsl.server.directives.RouteDirectives.complete
 import akka.pattern.ask
 import akka.util.Timeout
-import com.dchoi.MedicationActor._
+import com.dchoi.Actors.{ MedicationActor, PatientActor }
+import com.dchoi.Actors.MedicationActor._
 import com.dchoi.Models._
-import com.dchoi.PatientActor.{ AssignPatientMedication, CreatePatient, GetPatients, UnassignPatientMedication }
+import com.dchoi.Actors.PatientActor.{ AssignPatientMedication, CreatePatient, GetPatients, UnassignPatientMedication }
 
 import scala.concurrent.Future
 import scala.concurrent.duration._

@@ -1,7 +1,7 @@
-package com.dchoi
+package com.dchoi.Actors
 
-import com.dchoi.Models.{ InitialPatient }
 import akka.actor.{ Actor, ActorLogging, Props }
+import com.dchoi.Models.InitialPatient
 import com.dchoi.Service.{ MedicationService, PatientService }
 
 object PatientActor {

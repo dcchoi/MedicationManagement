@@ -5,6 +5,7 @@ import scala.concurrent.duration.Duration
 import akka.actor.{ ActorRef, ActorSystem }
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
+import com.dchoi.Actors.{ MedicationActor, PatientActor }
 
 object MyServer extends App with MyRoutes {
   var port = 8090
