@@ -76,7 +76,7 @@ trait MyRoutes extends JsonSupport {
             )
           } ~
             path("assign") {
-              put {
+              post {
                 entity(as[PatientMedicationUpdate]) { update =>
                   val patientMedicationUpdate: Future[PatientActor.ActionPerformed] =
                     (patientActor ? AssignPatientMedication(update.patientId, update.medicationId)).mapTo[PatientActor.ActionPerformed]
@@ -87,7 +87,7 @@ trait MyRoutes extends JsonSupport {
               }
             } ~
             path("unassign") {
-              put {
+              post {
                 entity(as[PatientMedicationUpdate]) { update =>
                   val patientMedicationUpdate: Future[PatientActor.ActionPerformed] =
                     (patientActor ? UnassignPatientMedication(update.patientId, update.medicationId)).mapTo[PatientActor.ActionPerformed]

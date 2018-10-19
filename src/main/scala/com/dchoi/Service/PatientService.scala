@@ -42,8 +42,8 @@ object PatientService {
       description += "Patient Name: " + p.name + "\n"
       description += "Patient Id: " + p.id + "\n"
       p.medications.foreach(m => {
-        description += "\tMedication: " + m.name + "\n"
-        description += "\tId: " + m.id + "\n"
+        description += "\tMedication Name: " + m.name + "\n"
+        description += "\tMedication Id: " + m.id + "\n"
       })
     })
     description

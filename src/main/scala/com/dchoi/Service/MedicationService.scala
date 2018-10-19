@@ -18,7 +18,7 @@ object MedicationService {
   def outputMedicationsInfo(): String = {
     var description = ""
     medications.foreach(m => {
-      description += "Medication: " + m.name + "\n"
+      description += "Medication Name: " + m.name + "\n"
       description += "Medication Id: " + m.id + "\n"
     })
     description
